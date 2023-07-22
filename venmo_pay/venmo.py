@@ -54,5 +54,4 @@ def pay_with_venmo(amount: float, payment_note: str, venmo_handle: str):
 if __name__ == "__main__":
     pay_with_venmo(amount=AMOUNT,
                    payment_note=PAYMENT_NOTE,
-                   venmo_handle=VENMO_HANDLE,
-                   auth_context="./auth.json")
+                   venmo_handle=VENMO_HANDLE)
