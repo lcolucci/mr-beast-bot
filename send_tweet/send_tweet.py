@@ -1,5 +1,6 @@
 import playwright
 import  time
+import json
 
 # import send_tweet.initial_msg as initial_msg
 # from langchain.chat_models import ChatOpenAI
@@ -9,17 +10,78 @@ import  time
 from playwright.sync_api import Playwright, sync_playwright, expect
 
 INITIAL_MSG = """
-Hello {handle}! I am a MR. BEAST AGENT. I was built as part of the @agihouse_org Hackathon on July 22nd, 2022. 
+@{handle}! I am a MR. BEAST AGENT. I was built as part of the @agihouse_org Hackathon on 07/22. 
 
 My goal is to find one MR.BEAST fan and give them $100. 
 
-All you need to do is 1) tell me a good deed you did in the last week and 2) send me your Venmo handle. 
-
-I will only give the $100 to the first person that replies. Then, I will shut down, since my job will be done.
-
-You can reply to me on this tweet. Or, you can check out my life stream here: https://twitter.com/MrBeastAgent.
+All you need to do is 1) tell me a good deed you did in the last week and 2) send me your Venmo handle.
 """
 
+class TwitterBot:
+
+    def __init__(self, master_list_path: str): 
+
+        self.master_list = self.load_handles(master_list_path)
+
+
+
+    def save_current_state(self, path):
+
+        # Serializing json
+        json_struct = json.dumps(self.master_list, indent=4)
+        
+        # Writing to sample.json
+        with open(path, "w") as outfile:
+            outfile.write(json_struct)
+
+
+        
+
+    def get_next_handle(self):
+
+        handle = None
+        for i, follower in enumerate(self.master_list):
+            if follower['sent_message'] == 'False':
+                self.master_list[i]['sent_message'] = 'True'
+                self.save_current_state('./send_tweet/temp.json')
+                handle = follower['nametag']
+                break
+
+        if handle == None:
+            print('NO MORE HANDLES!!!')
+        return handle
+    
+    def load_handles(self, path):
+
+        if '.csv' in path:
+            with open(path, 'r') as file:
+                handles = file.readlines()
+
+            handles = [handle.strip() for handle in handles]
+            
+            followers = []
+            for i, handle in enumerate(handles): 
+                if i == 0: 
+                    continue
+                
+                split_line =  handle.split(',')
+
+                follower = {
+                    'nametag': split_line[0],
+                    'profile_link': split_line[1],
+                    'verified': split_line[2],
+                    'sent_message': split_line[3]
+                }
+                followers.append(follower)
+
+        elif '.json' in path:
+            with open(path, 'r') as file:
+                followers = json.load(path)
+
+        return followers
+
+         
+    
 
 
 def auto_login(playwright: Playwright, auth_json_path=None): 
@@ -78,8 +140,13 @@ def create_and_send_tweet(page, handle: str):
     time.sleep(3)
     page.get_by_test_id("tweetButtonInline").click()
     time.sleep(3)
+    page.get_by_test_id("tweetButtonInline").click()
+    time.sleep(3)
+    results = page.locator(':has-text("playwright")')
+    time.sleep(3)
 
-    return page
+    # TODO: need to get url
+    return page, None
     
 
 def send_initial_tweet(handle: str): 
@@ -87,16 +154,21 @@ def send_initial_tweet(handle: str):
     with sync_playwright() as playwright:
         browser, page = manual_login(playwright, auth_json_path=None)
 
+        page, link_to_tweet = create_and_send_tweet(page, handle)
 
-        page = create_and_send_tweet(page, handle)
 
-    return page
-
+    return page, link_to_tweet
 
 if __name__ == "__main__":
 
-    handle= "@lina_colucci"
-    send_initial_tweet(handle)
+    master_list_path = './send_tweet/nametags_test.csv'
+    twitter_bot = TwitterBot(master_list_path=master_list_path)
+
+    handle = twitter_bot.get_next_handle()
+
+    _, link_to_tweet = send_initial_tweet(handle)
+    print(link_to_tweet)
+
 
 
 
