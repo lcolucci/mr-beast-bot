@@ -69,8 +69,15 @@ def return_users_replies(target_user_handle: str, tweets: list[dict]) -> list[di
     return users_replies
 
 
-
 def did_user_reply(url: str, target_user: str): 
+    """Check a single tweet for replies
+        response_bool: bool
+        users_replies: list[
+                        {id: int, 
+                        handle: str, 
+                        reply_content: str}
+                        ]
+    """
     with sync_playwright() as playwright:
         html = scrape_webpage(url, playwright, 'auth.json')
         all_tweets = get_tweets(html)
@@ -78,12 +85,32 @@ def did_user_reply(url: str, target_user: str):
         if response_bool: 
             users_replies = return_users_replies( target_user, all_tweets,)
         else: 
-            user_replies = None
+            users_replies = None
         return (response_bool, users_replies)
 
 
+def check_all_messages_for_a_reply(list_of_agent_messages: list[dict]): 
+    for agent_message in list_of_agent_messages: 
+        print("\nChecking message: ", agent_message)
+        url = agent_message["url"]
+        target_user = agent_message["target_user"]
+        response_bool, replies = did_user_reply(url, target_user)
+        print(f"Response: {response_bool} \nReplies: {replies}")
+
+
+
 if __name__ == '__main__':
-    url = "https://twitter.com/lina_colucci/status/1679252007490826240"
-    target_user = "Dr_ASChaudhari"
-    response_bool, users_replies = did_user_reply(url, target_user)
-    print(response_bool, users_replies)
+    # --- Test: Check a single message for a reply --- 
+    # url = "https://twitter.com/lina_colucci/status/1679252007490826240"
+    # target_user = "Dr_ASChaudhari"
+    # response_bool, users_replies = did_user_reply(url, target_user)
+    # print(response_bool, users_replies)
+    
+    # --- Test: Check list of messages for a reply --- 
+    list_of_agent_messages = [
+        {"url": "https://twitter.com/lina_colucci/status/1679252007490826240", "target_user": "Dr_ASChaudhari"},
+        {"url": "https://twitter.com/SidneyPrimas/status/1682905036417011714", "target_user": "lina_colucci"},
+        {"url": "https://twitter.com/SidneyPrimas/status/1682905036417011714", "target_user": "lina_colucci"},
+        {"url": "https://twitter.com/MrBeast/status/1523674759925760000", "target_user": "lina_colucci"}
+    ]
+    check_all_messages_for_a_reply(list_of_agent_messages)
