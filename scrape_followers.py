@@ -14,11 +14,9 @@ def scrape_webpage(playwright: Playwright, auth_json_path, url = 'https://twitte
     html = page.content()
     browser.close()
 
-
-
-    # Read dataframe from CSV file if it exists, otherwise create a new one
-    if os.path.exists('nametags.csv'):
-        df = pd.read_csv('nametags.csv')
+    # Read dataframe from JSON file if it exists, otherwise create a new one
+    if os.path.exists('nametags.json'):
+        df = pd.read_json('nametags.json')
     else:
         df = pd.DataFrame(columns=['nametag', 'profile_link', 'verified', 'sent_message'])
 
@@ -37,8 +35,9 @@ def scrape_webpage(playwright: Playwright, auth_json_path, url = 'https://twitte
                                 'verified': False, 
                                 'sent_message': False}, ignore_index=True)
 
-    # Save dataframe to CSV
-    df.to_csv('nametags.csv', index=False)
+    # Save dataframe to JSON
+    df.to_json('nametags.json', orient='records')
 
+url_to_use = 'https://twitter.com/MrBeast/status/1672952297163218946'
 with sync_playwright() as playwright:
-    scrape_webpage(playwright, auth_json_path='auth.json', url = 'https://twitter.com/mrbeast/status/1682530774103339008?s=46&t=Rlo94dqY20ZzBz4btwDZiQ')    
+    scrape_webpage(playwright, auth_json_path='auth.json', url = url_to_use)
