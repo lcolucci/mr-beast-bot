@@ -1,6 +1,7 @@
 import playwright
 import  time
 import json
+from bs4 import BeautifulSoup, Tag
 
 # import send_tweet.initial_msg as initial_msg
 # from langchain.chat_models import ChatOpenAI
@@ -76,7 +77,7 @@ class TwitterBot:
 
         elif '.json' in path:
             with open(path, 'r') as file:
-                followers = json.load(path)
+                followers = json.load(file)
 
         return followers
 
@@ -140,14 +141,23 @@ def create_and_send_tweet(page, handle: str):
     time.sleep(3)
     page.get_by_test_id("tweetButtonInline").click()
     time.sleep(3)
-    page.get_by_test_id("tweetButtonInline").click()
+    page.goto('https://twitter.com/mr_beast_bot')
     time.sleep(3)
-    results = page.locator(':has-text("playwright")')
-    time.sleep(3)
-
-    # TODO: need to get url
-    return page, None
     
+    html = page.content()
+    soup = BeautifulSoup(html, 'html.parser')
+    tweets_as_bs4 = soup.find_all("article",{"data-testid": "tweet"}) 
+    for t in tweets_as_bs4[0]: 
+        links = t.find_all("a", {"href": True}) #["href"]
+        results = []
+        for link in links: 
+            if link["href"].startswith("/mr_beast_bot/status"):
+                results.append(link["href"]) #finds both tweet and tweets/analytics links
+        results = results[0] #get first link only (only the tweet)
+    
+    link_to_tweet = "https://twitter.com/" + results
+    return page, link_to_tweet
+
 
 def send_initial_tweet(handle: str): 
 
@@ -161,7 +171,7 @@ def send_initial_tweet(handle: str):
 
 if __name__ == "__main__":
 
-    master_list_path = './send_tweet/nametags_test.csv'
+    master_list_path = './send_tweet/master_json_test.json'
     twitter_bot = TwitterBot(master_list_path=master_list_path)
 
     handle = twitter_bot.get_next_handle()
