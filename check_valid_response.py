@@ -12,7 +12,7 @@ load_dotenv()
 
 # Define your desired data structure.
 class Answer(BaseModel):
-    venmo_handle: str = Field(description="Venmo handle in the tweet. Example: @Vishakh-Hegde. If there is no venmo handle, this is an empty string. All Venmo handles start with a @.")
+    venmo_handle: str = Field(description="Venmo handle in the tweet. Example: @Vishakh-Hegde. All Venmo handles start with a @.")
     payment_note: str = Field(description="Payment note in the tweet. Example: You bought some groceries for my neighbor. Here is $5. If the person did not mention a kind thing they did, this is an empty string.")
 
 
