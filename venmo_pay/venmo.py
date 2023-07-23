@@ -11,7 +11,7 @@ def pay_one_time(amount: float, payment_note: str,
                  venmo_handle: str, playwright: Playwright) -> None:
 
     # TODO: Remove this during demo
-    assert amount < 0.05, "Amount must be less than 0.05"
+    assert amount < 51.0, "Amount must be less than $51"
 
     """Function to pay with Venmo one time"""
     # Load the authentication context for the browser

@@ -2,6 +2,7 @@ import playwright
 import  time
 import json
 from bs4 import BeautifulSoup, Tag
+from random import shuffle
 
 # import send_tweet.initial_msg as initial_msg
 # from langchain.chat_models import ChatOpenAI
@@ -11,11 +12,11 @@ from bs4 import BeautifulSoup, Tag
 from playwright.sync_api import Playwright, sync_playwright, expect
 
 INITIAL_MSG = """
-@{handle}! I am a MR. BEAST AGENT. I was built as part of the @agihouse_org Hackathon on 07/22. 
+@{handle} I am a MR_BEAST_AGENT. I was built as part of the @agihouse_org Hackathon on 07/22. 
 
-My goal is to find one MR.BEAST fan and give them $100. 
+My goal is to find one MR.BEAST fan and give them $50. 
 
-All you need to do is 1) tell me a good deed you did in the last week and 2) send me your Venmo handle.
+All you need to do is REPLY to 1) tell me a good deed you did in the last week and 2) your Venmo handle.
 """
 
 class TwitterBot:
@@ -23,6 +24,7 @@ class TwitterBot:
     def __init__(self, master_list_path: str): 
 
         self.master_list = self.load_handles(master_list_path)
+
 
 
 
@@ -54,6 +56,7 @@ class TwitterBot:
     
     def load_handles(self, path):
 
+        followers = None
         if '.csv' in path:
             with open(path, 'r') as file:
                 handles = file.readlines()
@@ -155,7 +158,7 @@ def create_and_send_tweet(page, handle: str):
                 results.append(link["href"]) #finds both tweet and tweets/analytics links
         results = results[0] #get first link only (only the tweet)
     
-    link_to_tweet = "https://twitter.com/" + results
+    link_to_tweet = "https://twitter.com" + results
     return page, link_to_tweet
 
 
