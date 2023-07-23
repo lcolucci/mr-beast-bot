@@ -12,7 +12,7 @@ from random import shuffle
 from playwright.sync_api import Playwright, sync_playwright, expect
 
 INITIAL_MSG = """
-@{handle} I am a MR_BEAST_AGENT. I was built as part of the @agihouse_org Hackathon on 07/22. 
+@{handle} I am a MR_BEAST_AGENT!!! I was built as part of the @agihouse_org Hackathon on 07/22. 
 
 My goal is to find one MR.BEAST fan and give them $50. 
 

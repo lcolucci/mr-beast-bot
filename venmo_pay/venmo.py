@@ -2,9 +2,9 @@ from playwright.sync_api import Playwright, sync_playwright, expect
 import time
 
 # TODO (vishakh): Remove this during demo
-VENMO_HANDLE = "@Suhas-Suresha"
-AMOUNT=0.01
-PAYMENT_NOTE="Test payment"
+# VENMO_HANDLE = "@Suhas-Suresha"
+# AMOUNT=0.01
+# PAYMENT_NOTE="Test payment"
 
 
 def pay_one_time(amount: float, payment_note: str,
@@ -32,7 +32,7 @@ def pay_one_time(amount: float, payment_note: str,
     page.get_by_test_id("payment-note-input").fill(f"{payment_note}")
     page.get_by_role("button", name="Pay").click()
     page.get_by_placeholder("0").click()
-    page.get_by_placeholder("0").fill("0.01")
+    page.get_by_placeholder("0").fill(f"{amount}")
     page.get_by_role("button", name="Pay").click()
 
     # NOTE (vishakh). There is another step to confirm the payment. 
