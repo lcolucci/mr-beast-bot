@@ -76,7 +76,7 @@ class TwitterBot:
 
         elif '.json' in path:
             with open(path, 'r') as file:
-                followers = json.load(path)
+                followers = json.load(file)
 
         return followers
 
