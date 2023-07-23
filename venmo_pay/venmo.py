@@ -16,7 +16,7 @@ def pay_one_time(amount: float, payment_note: str,
     """Function to pay with Venmo one time"""
     # Load the authentication context for the browser
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="./auth.json")
+    context = browser.new_context(storage_state="./auth_venmo.json")
     page = context.new_page()
     print("Navigating to Venmo")
     page.goto("https://account.venmo.com/pay")
